@@ -1,0 +1,27 @@
+window:
+  expected_resolution: [1920, 1080]
+  require_focus: true
+  # title_contains: "Overwatch"
+
+recognition:
+  confidence_threshold: 0.90
+  required_consecutive_frames: 3
+  capture_interval_ms: 300
+
+timeouts:
+  queue_seconds: 900
+  hero_select_seconds: 20
+  spawn_movement_seconds: 30
+  active_game_seconds: 1800
+  post_game_seconds: 120
+
+safety:
+  emergency_stop_key: "f12"
+  max_consecutive_failures: 3
+  stop_on_unknown_screen: true
+  stop_on_focus_loss: true
+
+session:
+  target_wins: 50
+  state_file: "runtime/session.json"
+  exit_action: "return_to_menu"

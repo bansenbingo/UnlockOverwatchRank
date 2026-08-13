@@ -2,6 +2,7 @@
 
 from .models import MatchResult, Observation, ScreenState, SessionSnapshot, Transition
 from .state_machine import StateMachine, StateMachineConfig
+from .storage import SessionStore
 
 __all__ = [
     "MatchResult",
@@ -10,5 +11,6 @@ __all__ = [
     "SessionSnapshot",
     "StateMachine",
     "StateMachineConfig",
+    "SessionStore",
     "Transition",
 ]
