@@ -42,7 +42,7 @@ jobs:
         shell: pwsh
         run: >-
           pyinstaller --noconfirm --clean --onefile --name UnlockOverwatchRank
-          --paths src src/ow_automation/cli.py
+          --paths src packaging/windows_entry.py
 
       - name: Package executable and checksum
         shell: pwsh
