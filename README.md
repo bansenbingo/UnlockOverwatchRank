@@ -46,3 +46,16 @@ PYTHONPATH=src python -m pytest -q
 ```
 
 目前默认提供离线可测试的核心库和假后端。Windows 集成时，需要实现窗口焦点检查、模板资产和授权测试环境；未知界面、验证/更新弹窗、失焦或 OCR 不可用时，运行时必须停止并交由人工处理。
+
+## Windows executable release
+
+Windows-specific support is kept in `src/ow_automation/windows.py`. It uses documented `user32` APIs (`SendInput`, `SetCursorPos`, `EnumWindows`, `GetWindowRect`) for ordinary keyboard/mouse events and visible-window selection. It does not access game processes or memory. The Mac implementation is only a development fallback; the target runtime is Windows.
+
+The repository includes [`.github/workflows/windows-release.yml`](.github/workflows/windows-release.yml). Creating and pushing a version tag builds and tests a Windows x64 one-file executable on a GitHub-hosted Windows runner, then attaches the ZIP and SHA-256 checksum to a GitHub Release:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+The generated archive contains `UnlockOverwatchRank.exe`. It expects a separately supplied `config.yaml` and template assets; it does not bundle game files, credentials, Tesseract data, or any anti-detection component. A first release must finish its GitHub Actions build before the executable appears in the repository's Releases page.
