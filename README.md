@@ -26,3 +26,23 @@ conda run -n ow python -m pip install -r requirements.txt
 ```
 
 `pytesseract` 是 OCR 的 Python 封装，实际运行 OCR 功能还需要在操作系统中单独安装并配置 Tesseract 可执行程序。Windows 上的 `pywin32` 会依据平台标记自动安装；macOS 运行系统级输入控制前还需要在“隐私与安全性 → 辅助功能”中授予终端或 IDE 权限。
+
+## Python 工程
+
+代码位于 `src/ow_automation`，按边界拆分为：
+
+- `models.py` / `state_machine.py`：可离线测试的状态、置信度确认、超时和 50 胜安全退出。
+- `capture.py`：基于桌面区域的 `mss` 捕捉适配器，以及用于回放测试的静态帧源。
+- `vision.py`：OpenCV 多尺度模板匹配、OCR 关键词分类和场景合并；只分析图像，不发送输入。
+- `input_control.py`：受限点击/移动动作、急停、焦点检查和全路径按键释放。
+- `config.py` / `storage.py`：YAML 安全参数和原子 JSON 会话存档。
+- `runtime.py`：将捕捉、识别、状态机、存档和动作计划编排在一起。
+
+复制并修改示例配置：
+
+```bash
+cp config.example.yaml config.yaml
+PYTHONPATH=src python -m pytest -q
+```
+
+目前默认提供离线可测试的核心库和假后端。Windows 集成时，需要实现窗口焦点检查、模板资产和授权测试环境；未知界面、验证/更新弹窗、失焦或 OCR 不可用时，运行时必须停止并交由人工处理。

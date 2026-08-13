@@ -21,6 +21,7 @@ class ScreenState(str, Enum):
     ACTIVE_GAME = "ACTIVE_GAME"
     POST_GAME = "POST_GAME"
     RESULT_CONFIRMED = "RESULT_CONFIRMED"
+    AWAIT_MAIN_MENU = "AWAIT_MAIN_MENU"
     SAFE_EXIT = "SAFE_EXIT"
     STOPPED = "STOPPED"
     UNKNOWN_SCREEN = "UNKNOWN_SCREEN"
@@ -70,4 +71,3 @@ class SessionSnapshot:
     last_match_result: MatchResult | None = None
     consecutive_failures: int = 0
     last_transition_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-

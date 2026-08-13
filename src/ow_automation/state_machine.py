@@ -54,7 +54,8 @@ ALLOWED_TRANSITIONS: dict[ScreenState, set[ScreenState]] = {
     ScreenState.SPAWN_ROOM: {ScreenState.ACTIVE_GAME},
     ScreenState.ACTIVE_GAME: {ScreenState.POST_GAME},
     ScreenState.POST_GAME: {ScreenState.RESULT_CONFIRMED},
-    ScreenState.RESULT_CONFIRMED: {ScreenState.MAIN_MENU, ScreenState.SAFE_EXIT},
+    ScreenState.RESULT_CONFIRMED: {ScreenState.AWAIT_MAIN_MENU, ScreenState.SAFE_EXIT},
+    ScreenState.AWAIT_MAIN_MENU: {ScreenState.MAIN_MENU},
     ScreenState.SAFE_EXIT: {ScreenState.STOPPED},
 }
 
@@ -137,7 +138,11 @@ class StateMachine:
             return self._fail(f"{self.state.value} timed out", now)
 
         if self.state == ScreenState.RESULT_CONFIRMED:
-            destination = ScreenState.SAFE_EXIT if self.wins >= self.config.target_wins else ScreenState.MAIN_MENU
+            destination = (
+                ScreenState.SAFE_EXIT
+                if self.wins >= self.config.target_wins
+                else ScreenState.AWAIT_MAIN_MENU
+            )
             return self._transition(destination, "match result persisted", now)
 
         if self.state == ScreenState.SAFE_EXIT:

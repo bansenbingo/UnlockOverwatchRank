@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "unlock-overwatch-rank"
+version = "0.1.0"
+description = "Conservative, screen-driven desktop automation primitives for authorized testing"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+dependencies = [
+  "mss==10.2.0",
+  "numpy==2.4.6",
+  "opencv-python==5.0.0.93",
+  "Pillow==12.3.0",
+  "pytesseract==0.3.13",
+  "PyAutoGUI==0.9.54",
+  "pynput==1.8.2",
+  "PyYAML==6.0.3",
+]
+
+[project.optional-dependencies]
+test = ["pytest==9.1.1"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

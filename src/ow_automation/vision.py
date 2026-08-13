@@ -14,6 +14,7 @@ from typing import Iterable, Mapping, Sequence
 import cv2
 import numpy as np
 
+from .capture import CapturedFrame
 from .models import MatchResult, Observation, ScreenState
 
 
@@ -74,7 +75,9 @@ class TemplateMatcher:
             image = cv2.imread(str(path), cv2.IMREAD_COLOR)
             if image is None:
                 raise ValueError(f"could not decode template: {path}")
-            templates.append(Template(label=path.stem, image=image))
+            templates.append(
+                Template(label=path.stem, image=cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+            )
         return cls(templates, scales)
 
     def detect(self, frame: np.ndarray) -> list[Detection]:
@@ -191,11 +194,30 @@ class SceneClassifier:
         return max(candidates, key=lambda candidate: candidate.confidence)
 
 
+class VisionPipeline:
+    """FrameClassifier adapter that combines templates and optional OCR."""
+
+    def __init__(
+        self,
+        matcher: TemplateMatcher,
+        scene_classifier: SceneClassifier,
+        ocr_reader: OcrReader | None = None,
+    ) -> None:
+        self.matcher = matcher
+        self.scene_classifier = scene_classifier
+        self.ocr_reader = ocr_reader
+
+    def classify(self, frame: CapturedFrame) -> Observation:
+        detections = self.matcher.recognized(frame.image)
+        text = self.ocr_reader.read(frame.image) if self.ocr_reader is not None else ""
+        return self.scene_classifier.classify(detections, text)
+
+
 def _grayscale(image: np.ndarray) -> np.ndarray:
     if image.ndim == 2:
         return image
     if image.ndim == 3 and image.shape[2] in (3, 4):
-        code = cv2.COLOR_BGR2GRAY if image.shape[2] == 3 else cv2.COLOR_BGRA2GRAY
+        code = cv2.COLOR_RGB2GRAY if image.shape[2] == 3 else cv2.COLOR_RGBA2GRAY
         return cv2.cvtColor(image, code)
     raise ValueError("frame must have one, three, or four channels")
 

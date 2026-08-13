@@ -59,6 +59,30 @@ def test_victory_is_counted_once_and_routes_to_safe_exit() -> None:
     assert transition.current == ScreenState.STOPPED
 
 
+def test_result_waits_for_visual_main_menu_before_next_queue() -> None:
+    machine = StateMachine(StateMachineConfig(required_consecutive_frames=1, target_wins=2))
+    for state in (
+        ScreenState.MAIN_MENU,
+        ScreenState.MODE_SELECT,
+        ScreenState.QUEUE_REQUESTED,
+        ScreenState.MATCH_FOUND,
+        ScreenState.HERO_SELECT,
+        ScreenState.SPAWN_ROOM,
+        ScreenState.ACTIVE_GAME,
+        ScreenState.POST_GAME,
+    ):
+        stabilize(machine, state)
+    stabilize(machine, ScreenState.RESULT_CONFIRMED, MatchResult.DEFEAT)
+
+    transition = machine.advance()
+    assert transition is not None
+    assert transition.current == ScreenState.AWAIT_MAIN_MENU
+
+    transition = stabilize(machine, ScreenState.MAIN_MENU)
+    assert transition is not None
+    assert transition.current == ScreenState.MAIN_MENU
+
+
 def test_timeout_stops_for_manual_intervention_after_failure_limit() -> None:
     entered = datetime(2026, 1, 1, tzinfo=timezone.utc)
     machine = StateMachine(

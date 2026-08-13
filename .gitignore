@@ -7,6 +7,7 @@ __pycache__/
 runtime/
 *.sqlite3
 *.log
+config.yaml
 
 # Editor and operating system files
 .DS_Store
